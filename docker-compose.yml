@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # MCP Server
+  mcp_server:
+    build:
+      context: .
+      dockerfile: deployment/dockerfile_mcp
+    container_name: ai-invoice-mcp
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./config:/app/config:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    networks:
+      - invoice-network
+
+  # API Service
+  api:
+    build:
+      context: .
+      dockerfile: deployment/dockerfile_api
+    container_name: ai-invoice-api
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    depends_on:
+      - mcp_server
+    networks:
+      - invoice-network
+
+networks:
+  invoice-network:
+    driver: bridge
