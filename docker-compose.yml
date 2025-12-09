@@ -1,38 +1,33 @@
-version: '3.8'
+version: "3.9"
 
 services:
-  # MCP Server
-  mcp_server:
-    build:
-      context: .
-      dockerfile: deployment/dockerfile_mcp
-    container_name: ai-invoice-mcp
-    ports:
-      - "5000:5000"
-    volumes:
-      - ./config:/app/config:ro
-    environment:
-      - PYTHONUNBUFFERED=1
-    restart: unless-stopped
-    networks:
-      - invoice-network
-
-  # API Service
   api:
-    build:
-      context: .
-      dockerfile: deployment/dockerfile_api
-    container_name: ai-invoice-api
+    build: ./api
+    container_name: invoice-api
     ports:
+      - "8080:8080"
+    environment:
+      ENV: ${ENV}
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
+      API_ORIGIN: ${API_ORIGIN}
+      MCP_URL: ${MCP_URL}
+    depends_on:
+      - mcp
+
+  mcp:
+    build: ./mcp
+    container_name: invoice-mcp
+    expose:
       - "8000:8000"
     environment:
-      - PYTHONUNBUFFERED=1
-    restart: unless-stopped
-    depends_on:
-      - mcp_server
-    networks:
-      - invoice-network
+      ENV: ${ENV}
 
-networks:
-  invoice-network:
-    driver: bridge
+  ui:
+    container_name: invoice-ui
+    image: nginx:alpine
+    ports:
+      - "5050:80"
+    volumes:
+      - ./ui:/usr/share/nginx/html:ro
+    environment:
+      API_ORIGIN: ${API_ORIGIN}
