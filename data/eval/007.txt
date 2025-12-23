@@ -1,0 +1,4 @@
+Invoice
+Stripe Payments Europe, Ltd.
+Date: 01 Aug 2025
+Amount Due: USD 199.00

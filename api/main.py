@@ -1,46 +1,48 @@
 import os
 import fitz
 import requests
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
+import logging
+logger = logging.getLogger("invoice-api")
+logging.basicConfig(level=logging.INFO)
 
-load_dotenv()  # loads .env.dev or .env.prod
+app = FastAPI(title="Invoice API", version="1.0")
 
-ENV = os.getenv("ENV", "development")
-FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "http://localhost:5050")
+MCP_URL = os.getenv("MCP_URL", "http://mcp:8000/process")
+FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "*")
 
-app = FastAPI(
-    docs_url="/docs" if ENV == "development" else None,
-    redoc_url="/redoc" if ENV == "development" else None,
-    openapi_url="/openapi.json" if ENV == "development" else None,
-)
-
-# CORS (best practice)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[FRONTEND_ORIGIN],
-    allow_credentials=False,
+    allow_origins=[FRONTEND_ORIGIN] if FRONTEND_ORIGIN != "*" else ["*"],
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-MCP_URL = os.getenv("MCP_URL", "http://localhost:8000/process")
+def extract_text_from_pdf(pdf_bytes: bytes) -> str:
+    doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+    return "\n".join(page.get_text() for page in doc)
 
+@app.get("/")
+def health():
+    return {"service": "api", "status": "ok"}
 
 @app.post("/analyze")
 async def analyze(file: UploadFile = File(...)):
-    try:
-        pdf_bytes = await file.read()
-        doc = fitz.open(stream=pdf_bytes, filetype="pdf")
-        text = "\n".join([page.get_text() for page in doc])
+    pdf_bytes = await file.read()
+    text = extract_text_from_pdf(pdf_bytes)
 
-        response = requests.post(MCP_URL, json={"text": text})
+    ##log the extracted text length
+    logger.info("Received file: %s (%s)", file.filename, file.content_type)
+    logger.info("Extracted text length: %s", len(text))
+    logger.info("Calling MCP_URL=%s", MCP_URL)
 
-        if response.status_code != 200:
-            raise HTTPException(status_code=500, detail=f"MCP error: {response.text}")
+    resp = requests.post(MCP_URL, json={"text": text}, timeout=120)
 
-        return response.json()
+    ##log status code
+    logger.info("MCP status=%s", resp.status_code)
+    logger.info("MCP response preview=%s", resp.text[:200])
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    resp.raise_for_status()
+    return resp.json()

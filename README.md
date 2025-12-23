@@ -1,45 +1,58 @@
-# AI Invoice Insights — MCP-Powered Micro-SaaS
-Instantly extract invoice insights with a lightweight MCP server and a FastAPI wrapper.
-No LLM required for the MVP.
+# AI Invoice Insights — Multi-Agent MCP (Ollama-ready)
 
-## Features
-- Extract vendor, amount, dates, VAT
-- Simple anomaly engine
-- PDF → Text extraction (PyMuPDF)
-- MCP server with modular tools
-- FastAPI endpoint for easy integration
-- Optional LLM extension
-- Dockerized & deployable on OVH
+## What this is
+A multi-agent invoice intelligence backend built with:
+- **API service**: accepts PDF upload, extracts text, calls MCP
+- **MCP service**: runs a **multi-agent pipeline** (preprocess → extract → validate → vendor normalize)
+- **UI**: simple static frontend calling the API
 
-## Tech Stack
-- Python 3.11
-- FastAPI
-- PyMuPDF
-- MCP Tools (custom)
-- Docker
+## Architecture (Priority 1)
+UI → API → MCP (/process) → Orchestrator → Agents
+- TextPreprocessAgent
+- InvoiceExtractionAgent (LLM-first, with regex fallback)
+- ValidationAgent (warnings + confidence)
+- VendorAgent (normalization; optional LLM)
 
-## Run Locally
-docker-compose up --build
+## Endpoints
+- API: `POST http://localhost:8080/analyze` (multipart form-data file=PDF)
+- MCP: `POST http://localhost:8000/process` (json: {"text": "..."})
+- Health:
+  - API: `GET http://localhost:8080/`
+  - MCP: `GET http://localhost:8000/`
 
+## Local run (no Docker)
+Install deps:
+- `pip install -r api/requirements.txt`
+- `pip install -r mcp/requirements.txt`
 
-## API Usage
-POST /analyze
-file: PDF
+Run:
+- `make run-mcp`
+- `make run-api`
 
-## Output
-{
-"vendor": "ACME Corp",
-"invoice_date": "2024-05-10",
-"due_date": "2024-06-10",
-"amount_total": "392.50",
-"vat_rate": "20%",
-"anomalies": ["Missing invoice number"]
-}
+## Docker run
+Start everything:
+- `make dev`
 
+Services:
+- UI: http://localhost:5500
+- API: http://localhost:8080/docs
+- MCP: http://localhost:8000/docs
 
-## Upgrade Paths
-- Add LLM extraction (GPT, Mistral, Llama)
-- Add duplicate invoice detection
-- Add subscription recognition
-- Add expense categorization
+## Ollama setup
+Install and run Ollama locally, then pull a model:
+- `ollama pull llama3.2`
 
+`.env.dev` uses:
+- `LLM_BACKEND=ollama`
+- `OLLAMA_URL=http://host.docker.internal:11434`
+- `OLLAMA_MODEL=llama3.2:latest`
+
+To run without LLM:
+- set `LLM_BACKEND=none` in `.env.dev`
+
+## Output format
+MCP returns a stable schema with:
+- extracted fields
+- confidence per field
+- warnings
+- meta.agents_ran

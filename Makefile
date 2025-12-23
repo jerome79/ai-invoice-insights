@@ -1,73 +1,44 @@
-install:
-	cd mcp && pip install -r requirements.txt
-	cd api && pip install -r requirements.txt
+.PHONY: help run-mcp run-api dev up down logs test install eval
 
-# ------------------------------------
-# ENVIRONMENT MANAGEMENT
-# ------------------------------------
-
-env-dev:
-	copy .env.dev .env
-
-env-prod:
-	copy .env.prod .env
-
-
+help:
+	@echo Targets:
+	@echo   run-mcp  - run MCP locally on :8000
+	@echo   run-api  - run API locally on :8080
+	@echo   dev      - run docker compose using .env.dev
+	@echo   up       - alias for dev
+	@echo   down     - stop containers
+	@echo   logs     - follow logs
+	@echo   test     - run pytest
 
 run-mcp:
-	cd mcp && uvicorn server:app --reload --port 8000
+	cd mcp && python -m uvicorn mcp.server:app --reload --port 8000
 
 run-api:
-	cd api && uvicorn main:app --reload --port 8080
+	cd api && python -m uvicorn main:app --reload --port 8080
 
-run-ui:
-	cd ui && python -m http.server 5050
+dev:
+	docker-compose --env-file .env.dev up --build
 
-dev-local: env-dev
-	@echo "Running API, MCP and UI locally (no docker)"
-	@echo "Open three shells and run:"
-	@echo "launch mcp (8000) :   make run-mcp"
-	@echo "launch api (8080) :  make run-api"
-	@echo "launch ui (5050) :   make run-ui"
-
-prod:
-    export $(shell type .env.prod | xargs) && \
-    uvicorn api.main:app --host 0.0.0.0 --port 8080
-
-# ------------------------
-# LOCAL DEVELOPMENT
-# ------------------------
-
-
-# ------------------------------------
-# DOCKER DEVELOPMENT
-# ------------------------------------
-
-dev: env-dev
-	docker-compose up --build
+up: dev
 
 down:
-	docker-compose down
-
-# ------------------------------------
-# PRODUCTION BUILD (local)
-# ------------------------------------
-
-build-prod: env-prod
-	docker-compose -f docker-compose.yml build
-
-
-# ------------------------------------
-# PRODUCTION RUN (local)
-# ------------------------------------
-
-run-prod: env-prod
-	docker-compose -f docker-compose.yml up -d
-
-
-# ------------------------------------
-# LOGS
-# ------------------------------------
+	docker-compose down -v
 
 logs:
-	docker-compose logs -f
+	docker-compose logs -f api mcp ui
+
+test:
+	python -m pip install -U pip
+	pip install -r mcp/requirements.txt
+	pip install pytest
+	pytest -q
+
+install:
+	pip install -r mcp/requirements.txt
+	pip install -r api/requirements.txt
+	pip install -r requirements-dev.txt
+
+
+eval:
+	python -m eval.run_eval
+

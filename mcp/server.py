@@ -1,65 +1,22 @@
-import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
-from dotenv import load_dotenv
-import re
+from schemas import InvoiceRequest
+from orchestrator import run_pipeline
 
-load_dotenv()
+app = FastAPI(title="Invoice MCP", version="1.1")
 
-ENV = os.getenv("ENV", "development")
-API_ORIGIN = os.getenv("API_ORIGIN", "http://localhost:8080")
-
-app = FastAPI(
-    docs_url="/docs" if ENV == "development" else None,
-    redoc_url="/redoc" if ENV == "development" else None,
-    openapi_url="/openapi.json" if ENV == "development" else None,
-)
-
-# 🔐 allow only the API to call the MCP
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[API_ORIGIN],
-    allow_credentials=False,
+    allow_origins=["*"],  # tighten later for prod
+    allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
-class InvoiceRequest(BaseModel):
-    text: str
-
+@app.get("/")
+def health():
+    return {"service": "mcp", "status": "ok"}
 
 @app.post("/process")
-def process_invoice(req: InvoiceRequest):
-    text = req.text
-
-    vendor = extract_vendor(text)
-    date = extract_date(text)
-    amount = extract_amount(text)
-
-    return {
-        "vendor": vendor,
-        "invoice_date": date,
-        "amount_total": amount
-    }
-
-
-# Simple extractors
-def extract_vendor(text):
-    for line in text.split("\n"):
-        if "anthropic" in line.lower():
-            return line.strip()
-    return "Unknown Vendor"
-
-
-def extract_date(text):
-    m = re.search(
-        r"(January|February|March|April|May|June|July|August|September|October|November|December)\s+\d{1,2},\s+\d{4}",
-        text)
-    return m.group(0) if m else "Unknown"
-
-
-def extract_amount(text):
-    m = re.search(r"\$[\d,]+\.\d{2}", text)
-    return m.group(0) if m else "Unknown"
+def process(req: InvoiceRequest):
+    return run_pipeline(req.text,include_trace=req.include_trace).model_dump()

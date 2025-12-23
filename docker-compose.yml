@@ -1,33 +1,26 @@
-version: "3.9"
-
 services:
+  mcp:
+    build: ./mcp
+    container_name: invoice-mcp
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env.dev
+
   api:
     build: ./api
     container_name: invoice-api
     ports:
       - "8080:8080"
-    environment:
-      ENV: ${ENV}
-      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}
-      API_ORIGIN: ${API_ORIGIN}
-      MCP_URL: ${MCP_URL}
+    env_file:
+      - .env.dev
     depends_on:
       - mcp
 
-  mcp:
-    build: ./mcp
-    container_name: invoice-mcp
-    expose:
-      - "8000:8000"
-    environment:
-      ENV: ${ENV}
-
   ui:
-    container_name: invoice-ui
     image: nginx:alpine
+    container_name: invoice-ui
     ports:
-      - "5050:80"
+      - "5500:80"
     volumes:
       - ./ui:/usr/share/nginx/html:ro
-    environment:
-      API_ORIGIN: ${API_ORIGIN}

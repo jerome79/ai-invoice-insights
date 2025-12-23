@@ -1,0 +1,4 @@
+INVOICE
+Company: Amazon Web Services EMEA SARL
+Invoice date: 2025-10-03
+Total Amount Due: EUR 123.45

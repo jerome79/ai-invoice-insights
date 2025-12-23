@@ -1,0 +1,59 @@
+name: Eval Regression
+
+on:
+  pull_request:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    env:
+      THRESHOLD: "0.70"   # start reasonable; raise later (0.80, 0.85, ...)
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # If you have separate requirements, keep both:
+          if [ -f "mcp/requirements.txt" ]; then pip install -r mcp/requirements.txt; fi
+          if [ -f "api/requirements.txt" ]; then pip install -r api/requirements.txt; fi
+          # If you have a root requirements.txt instead:
+          if [ -f "requirements.txt" ]; then pip install -r requirements.txt; fi
+
+      - name: Run eval
+        run: |
+          make eval
+
+      - name: Enforce threshold
+        run: |
+          python - << 'PY'
+          import json, glob, os, sys
+          threshold = float(os.environ.get("THRESHOLD", "0.7"))
+          files = sorted(glob.glob("reports/eval_report_*.json"))
+          if not files:
+              print("No eval report found in reports/")
+              sys.exit(1)
+          path = files[-1]
+          data = json.load(open(path, "r", encoding="utf-8"))
+          score = float(data["summary"]["avg_field_accuracy"])
+          print(f"Latest report: {path}")
+          print(f"avg_field_accuracy={score:.3f}, threshold={threshold:.3f}")
+          if score < threshold:
+              print("❌ Threshold not met.")
+              sys.exit(1)
+          print("✅ Threshold met.")
+          PY
+
+      - name: Upload report artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-report
+          path: reports/eval_report_*.json

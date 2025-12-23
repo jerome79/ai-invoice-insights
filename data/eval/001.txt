@@ -1,0 +1,8 @@
+Invoice
+Anthropic, PBC
+548 Market Street PMB 90375
+San Francisco, California 94104
+Invoice number TFNFAPBF-0001
+Date of issue July 6, 2025
+Total $6.00 USD
+Amount due $6.00 USD

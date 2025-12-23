@@ -1,0 +1,9 @@
+Invoice
+Acme Consulting
+Invoice Date: 2025-06-30
+
+Description        Qty  Unit price  Tax   Amount
+Consulting day     2    400.00      20%   800.00
+Subtotal: 800.00
+Tax: 160.00
+Total: 960.00 EUR

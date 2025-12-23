@@ -1,0 +1,6 @@
+Invoice
+OpenAI, L.L.C.
+Invoice Date: November 2, 2025
+Subtotal: £20.00
+Tax: £4.00
+Total: £24.00

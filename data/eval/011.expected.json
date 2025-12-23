@@ -1,0 +1,51 @@
+{
+  "document_type": "invoice",
+  "vendor": "Orica (supplier name not filled in sample header)",
+  "invoice_number": "90001779",
+  "invoice_date": "04/03/2020",
+  "due_date": "28/04/2020",
+  "currency": "AUD",
+  "subtotal_excl_tax": 14800.00,
+  "taxes": [
+    { "name": "GST", "rate": 0.10, "amount": 1480.00 }
+  ],
+  "total": 16280.00,
+  "line_items": [
+    {
+      "description": "FORTAN EXTRA 13 CUSTOMER SPECIAL",
+      "quantity": 12000,
+      "uom": "KG",
+      "unit_price": 0.77,
+      "net_excl_tax": 9240.00,
+      "tax": 924.00,
+      "total_incl_tax": 10164.00
+    },
+    {
+      "description": "ANFO CUSTOMER SPECIAL",
+      "quantity": 6000,
+      "uom": "KG",
+      "unit_price": 0.60,
+      "net_excl_tax": 3600.00,
+      "tax": 360.00,
+      "total_incl_tax": 3960.00
+    },
+    {
+      "description": "ENDURADET F100 12M DELAY ...",
+      "quantity": 120,
+      "uom": "PC",
+      "unit_price": 13.00,
+      "net_excl_tax": 1560.00,
+      "tax": 156.00,
+      "total_incl_tax": 1716.00
+    },
+    {
+      "description": "Freight",
+      "quantity": 1,
+      "uom": "PC",
+      "unit_price": 400.00,
+      "net_excl_tax": 400.00,
+      "tax": 40.00,
+      "total_incl_tax": 440.00
+    }
+  ]
+}

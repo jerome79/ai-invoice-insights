@@ -1,6 +1,9 @@
-fastapi
-uvicorn
-requests
+fastapi==0.115.0
+uvicorn[standard]==0.30.6
+requests==2.32.3
 pymupdf==1.23.26
 dotenv
-python-multipart
+python-multipart==0.0.9
+pydantic==2.6.4
+
+
