@@ -7,7 +7,8 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 
 COPY . /app
 
+# Adding PYTHONPATH environment variable
+ENV PYTHONPATH=/app
+
 EXPOSE 8000
 CMD ["uvicorn", "server:app", "--host", "0.0.0.0", "--port", "8000"]
-
-
