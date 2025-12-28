@@ -1,21 +1,55 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Invoice Insights</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Invoice Insights</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <h1>Invoice Insights</h1>
 
-<h1>Invoice Insights</h1>
-
-<section>
+  <section class="card">
     <h2>Upload Invoice (PDF)</h2>
-    <input type="file" id="fileInput" accept="application/pdf">
-    <button onclick="analyze()">Analyze</button>
-    <div id="analysisOutput"></div>
-</section>
 
-<hr>
-<script src="app.js"></script>
+    <div class="row">
+      <input type="file" id="fileInput" accept="application/pdf" />
+      <button id="analyzeBtn">Analyze</button>
+    </div>
+
+    <div id="error" class="error"></div>
+
+    <h3>Selected run</h3>
+    <div><b>Run ID:</b> <span id="runId">—</span></div>
+
+    <h3>Result</h3>
+    <pre id="result">—</pre>
+
+    <h3>Trace</h3>
+    <pre id="trace">—</pre>
+  </section>
+
+  <section class="card">
+    <div class="row space-between">
+      <h2 style="margin: 0;">History</h2>
+      <button id="refreshHistoryBtn">Refresh</button>
+    </div>
+    <div id="history" class="history">Loading…</div>
+  </section>
+
+  <section class="card">
+    <h2>Optional: Test MCP directly</h2>
+    <p class="muted">This calls the MCP server directly (useful for debugging only).</p>
+
+    <textarea id="mcpText" rows="6" placeholder="Paste invoice text here..."></textarea>
+    <div class="row">
+      <button id="testMcpBtn">Send MCP</button>
+    </div>
+
+    <h3>MCP Output</h3>
+    <pre id="mcpOutput">—</pre>
+  </section>
+
+  <script src="app.js"></script>
 </body>
 </html>

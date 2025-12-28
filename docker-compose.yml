@@ -16,6 +16,10 @@ services:
       - .env.dev
     depends_on:
       - mcp
+    volumes:
+      - ./data:/app/data
+    environment:
+      DATABASE_URL: "sqlite:///./data/app.db"
 
   ui:
     image: nginx:alpine

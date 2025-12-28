@@ -42,3 +42,7 @@ install:
 eval:
 	python -m eval.run_eval
 
+PYTHON ?= python
+
+db-reset:
+	$(PYTHON) -c "import pathlib; p=pathlib.Path('data/app.db'); removed=p.exists(); p.unlink(missing_ok=True); print(('removed' if removed else 'no file'), p)"
