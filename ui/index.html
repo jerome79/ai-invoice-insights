@@ -5,27 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Invoice Insights</title>
   <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
 </head>
 
 <body>
   <header class="header">
     <h1>Invoice Insights</h1>
-    <p class="muted">Upload an invoice PDF → extract structured fields + trace. Save runs in history.</p>
+    <p class="muted">Upload one or multiple invoices → extract structured fields + trace.</p>
   </header>
 
   <section class="card">
-    <h2>Analyze an invoice</h2>
+    <div class="row space-between">
+      <h2 style="margin:0;">Analyze</h2>
+      <div class="pill muted" id="modePill">Ready</div>
+    </div>
 
     <div class="row">
-      <input type="file" id="fileInput" accept="application/pdf" />
-      <button id="analyzeBtn">Analyze</button>
+      <input type="file" id="filesInput" accept="application/pdf" multiple />
+      <button id="analyzeBtn" type="button">Analyze</button>
+      <button id="clearBtn" type="button" class="btn-secondary">Clear</button>
     </div>
 
     <div id="status" class="status" aria-live="polite">
       <span class="dot"></span>
       <span id="statusText">Ready.</span>
     </div>
-
     <div id="error" class="error" role="alert"></div>
 
     <hr class="sep" />
@@ -52,12 +56,26 @@
         <div class="label">Status</div>
         <div class="value"><span id="summaryStatus" class="badge badge-neutral">—</span></div>
       </div>
-      <div class="row">
-  <button id="copyJsonBtn" disabled>Copy JSON</button>
-  <button id="downloadJsonBtn" disabled>Download JSON</button>
-  <button id="downloadCsvBtn" disabled>Download CSV</button>
-</div>
 
+      <div class="row wrap">
+        <button id="copyJsonBtn" type="button" disabled>Copy JSON</button>
+        <button id="downloadJsonBtn" type="button" disabled>Download JSON</button>
+        <button id="downloadCsvBtn" type="button" disabled>Download CSV</button>
+
+        <span class="spacer"></span>
+
+        <button id="downloadAllJsonBtn" type="button" disabled class="btn-secondary">Download ALL (JSON)</button>
+        <button id="downloadAllCsvBtn" type="button" disabled class="btn-secondary">Download ALL (CSV)</button>
+      </div>
+    </div>
+
+    <div id="batchPanel" class="batch-panel hidden">
+      <div class="row space-between">
+        <h3 style="margin:0;">Batch results</h3>
+        <div class="muted small" id="batchMeta">—</div>
+      </div>
+
+      <div class="batch-grid" id="batchGrid"></div>
     </div>
 
     <hr class="sep" />
@@ -76,30 +94,24 @@
   <section class="card">
     <div class="row space-between">
       <h2 style="margin:0;">History</h2>
-      <button id="refreshHistoryBtn">Refresh</button>
+      <button id="refreshHistoryBtn" type="button">Refresh</button>
     </div>
-
     <div id="history" class="history">Loading…</div>
   </section>
 
-  <!-- Optional dev tool: MCP direct test (kept minimal; hidden by default) -->
   <section class="card">
     <details>
       <summary class="details-summary">Developer tools (optional)</summary>
 
       <h3>Test MCP directly</h3>
-      <p class="muted">This calls the MCP server directly for debugging. Not part of the end-user flow.</p>
-
       <textarea id="mcpText" rows="6" placeholder="Paste invoice text here..."></textarea>
       <div class="row">
-        <button id="testMcpBtn">Send MCP</button>
+        <button id="testMcpBtn" type="button">Send MCP</button>
       </div>
 
       <h4>MCP Output</h4>
       <pre id="mcpOutput">—</pre>
     </details>
   </section>
-
-  <script src="app.js"></script>
 </body>
 </html>
