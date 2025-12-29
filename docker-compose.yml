@@ -22,9 +22,10 @@ services:
       DATABASE_URL: "sqlite:///./data/app.db"
 
   ui:
-    image: nginx:alpine
+    build: ./ui
     container_name: invoice-ui
     ports:
       - "5500:80"
-    volumes:
-      - ./ui:/usr/share/nginx/html:ro
+    depends_on:
+      - api
+      - mcp

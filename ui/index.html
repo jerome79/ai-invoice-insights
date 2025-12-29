@@ -6,48 +6,98 @@
   <title>Invoice Insights</title>
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
-  <h1>Invoice Insights</h1>
+  <header class="header">
+    <h1>Invoice Insights</h1>
+    <p class="muted">Upload an invoice PDF → extract structured fields + trace. Save runs in history.</p>
+  </header>
 
   <section class="card">
-    <h2>Upload Invoice (PDF)</h2>
+    <h2>Analyze an invoice</h2>
 
     <div class="row">
       <input type="file" id="fileInput" accept="application/pdf" />
       <button id="analyzeBtn">Analyze</button>
     </div>
 
-    <div id="error" class="error"></div>
+    <div id="status" class="status" aria-live="polite">
+      <span class="dot"></span>
+      <span id="statusText">Ready.</span>
+    </div>
 
-    <h3>Selected run</h3>
-    <div><b>Run ID:</b> <span id="runId">—</span></div>
+    <div id="error" class="error" role="alert"></div>
 
-    <h3>Result</h3>
-    <pre id="result">—</pre>
+    <hr class="sep" />
 
-    <h3>Trace</h3>
-    <pre id="trace">—</pre>
+    <h3>Quick summary</h3>
+    <div id="summary" class="summary">
+      <div class="summary-item">
+        <div class="label">Run</div>
+        <div class="value"><span id="runId">—</span></div>
+      </div>
+      <div class="summary-item">
+        <div class="label">Vendor</div>
+        <div class="value" id="summaryVendor">—</div>
+      </div>
+      <div class="summary-item">
+        <div class="label">Invoice date</div>
+        <div class="value" id="summaryDate">—</div>
+      </div>
+      <div class="summary-item">
+        <div class="label">Total</div>
+        <div class="value" id="summaryTotal">—</div>
+      </div>
+      <div class="summary-item">
+        <div class="label">Status</div>
+        <div class="value"><span id="summaryStatus" class="badge badge-neutral">—</span></div>
+      </div>
+      <div class="row">
+  <button id="copyJsonBtn" disabled>Copy JSON</button>
+  <button id="downloadJsonBtn" disabled>Download JSON</button>
+  <button id="downloadCsvBtn" disabled>Download CSV</button>
+</div>
+
+    </div>
+
+    <hr class="sep" />
+
+    <details open>
+      <summary class="details-summary">Result JSON</summary>
+      <pre id="result">—</pre>
+    </details>
+
+    <details>
+      <summary class="details-summary">Trace</summary>
+      <pre id="trace">—</pre>
+    </details>
   </section>
 
   <section class="card">
     <div class="row space-between">
-      <h2 style="margin: 0;">History</h2>
+      <h2 style="margin:0;">History</h2>
       <button id="refreshHistoryBtn">Refresh</button>
     </div>
+
     <div id="history" class="history">Loading…</div>
   </section>
 
+  <!-- Optional dev tool: MCP direct test (kept minimal; hidden by default) -->
   <section class="card">
-    <h2>Optional: Test MCP directly</h2>
-    <p class="muted">This calls the MCP server directly (useful for debugging only).</p>
+    <details>
+      <summary class="details-summary">Developer tools (optional)</summary>
 
-    <textarea id="mcpText" rows="6" placeholder="Paste invoice text here..."></textarea>
-    <div class="row">
-      <button id="testMcpBtn">Send MCP</button>
-    </div>
+      <h3>Test MCP directly</h3>
+      <p class="muted">This calls the MCP server directly for debugging. Not part of the end-user flow.</p>
 
-    <h3>MCP Output</h3>
-    <pre id="mcpOutput">—</pre>
+      <textarea id="mcpText" rows="6" placeholder="Paste invoice text here..."></textarea>
+      <div class="row">
+        <button id="testMcpBtn">Send MCP</button>
+      </div>
+
+      <h4>MCP Output</h4>
+      <pre id="mcpOutput">—</pre>
+    </details>
   </section>
 
   <script src="app.js"></script>

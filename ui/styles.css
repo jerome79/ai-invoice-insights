@@ -1,49 +1,55 @@
+:root {
+  --border: #e6e6e6;
+  --text: #111;
+  --muted: #666;
+  --bg: #fff;
+  --card: #fff;
+  --danger: #b00020;
+  --ok: #0f7a3b;
+  --warn: #a15c00;
+  --neutral: #444;
+}
+
 body {
   font-family: Arial, sans-serif;
   margin: 40px;
   max-width: 1000px;
+  color: var(--text);
+  background: var(--bg);
 }
 
-h1 {
+.header {
   margin-bottom: 16px;
 }
 
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+
 .card {
-  border: 1px solid #ddd;
-  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
   padding: 16px;
   margin: 16px 0;
-  background: #fff;
+  background: var(--card);
 }
 
 .row {
   display: flex;
   gap: 10px;
   align-items: center;
-  margin-bottom: 12px;
+  margin: 10px 0;
 }
 
 .space-between {
   justify-content: space-between;
 }
 
-pre {
-  background: #111;
-  color: #eee;
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 14px;
-  white-space: pre-wrap;
-  overflow-x: auto;
-}
-
-textarea {
-  width: 100%;
-  margin: 10px 0;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  font-family: inherit;
+.sep {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 14px 0;
 }
 
 button {
@@ -58,32 +64,156 @@ button:hover {
   background: #eee;
 }
 
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  font-size: 14px;
+}
+
+.status .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: #bbb;
+}
+
+.status .dot.spinning {
+  background: #999;
+  animation: pulse 0.9s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.5); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.5; }
+}
+
 .error {
-  color: #b00020;
-  margin: 8px 0 12px;
+  color: var(--danger);
+  margin-top: 8px;
   min-height: 18px;
 }
 
-.muted {
-  color: #666;
-  font-size: 13px;
-  margin-top: 4px;
+.summary {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.summary-item {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.summary-item .label {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+
+.summary-item .value {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.details-summary {
+  cursor: pointer;
+  user-select: none;
+  margin: 6px 0;
+  font-weight: 600;
+}
+
+pre {
+  background: #111;
+  color: #eee;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+textarea {
+  width: 100%;
+  margin: 10px 0;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-family: inherit;
 }
 
 .history {
-  margin-top: 10px;
+  margin-top: 12px;
 }
 
 .history-list {
-  padding-left: 18px;
-  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-.history-item {
+.history-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px 12px;
   cursor: pointer;
-  margin: 6px 0;
 }
 
-.history-item:hover {
-  text-decoration: underline;
+.history-row:hover {
+  background: #fafafa;
+}
+
+.history-main {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.history-vendor {
+  font-weight: 700;
+}
+
+.history-meta {
+  color: var(--muted);
+  font-size: 13px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.dot-sep {
+  opacity: 0.6;
+}
+
+.badge {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid var(--border);
+  color: #fff;
+  white-space: nowrap;
+}
+
+.badge-ok { background: var(--ok); border-color: var(--ok); }
+.badge-error { background: var(--danger); border-color: var(--danger); }
+.badge-running { background: var(--warn); border-color: var(--warn); }
+.badge-neutral { background: var(--neutral); border-color: var(--neutral); }
+
+@media (max-width: 900px) {
+  .summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
